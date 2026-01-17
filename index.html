@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초3 스케줄 보드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdf7ef;
+      --panel: rgba(255, 255, 255, 0.78);
+      --primary: #f5a524;
+      --primary-strong: #f08b0c;
+      --accent: #37c5b4;
+      --accent-strong: #179d8b;
+      --ink: #1f2933;
+      --muted: #5d6771;
+      --line: rgba(31, 41, 51, 0.08);
+      --shadow: 0 18px 50px rgba(31, 41, 51, 0.12);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", "Segoe UI", -apple-system, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 20% 20%, #fff3da 0, #fff3da 18%, transparent 28%), radial-gradient(circle at 80% 10%, #d8f4ff 0, #d8f4ff 22%, transparent 34%), linear-gradient(135deg, #fff6e8 0%, #f6fbff 55%, #f3fffb 100%);
+      min-height: 100vh;
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .page {
+      max-width: 1160px;
+      margin: 0 auto 56px auto;
+      position: relative;
+    }
+
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(70px);
+      opacity: 0.55;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .orb.sunrise { width: 380px; height: 380px; background: #ffd29f; top: 12%; left: -10%; animation: float 16s ease-in-out infinite; }
+    .orb.mint { width: 320px; height: 320px; background: #c8fff3; bottom: -12%; right: 4%; animation: float 18s ease-in-out infinite reverse; }
+    .orb.lilac { width: 240px; height: 240px; background: #e9ddff; bottom: 28%; left: 16%; animation: float 22s ease-in-out infinite; }
+
+    @keyframes float {
+      0% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(6px, -10px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    .hero {
+      position: relative;
+      padding: clamp(20px, 5vw, 32px);
+      border-radius: calc(var(--radius) + 8px);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.35) 100%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: clamp(18px, 3vw, 28px);
+      z-index: 1;
+      align-items: center;
+    }
+
+    .hero-aside {
+      display: grid;
+      gap: 14px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      background: rgba(55, 197, 180, 0.14);
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 197, 180, 0.2);
+    }
+
+    h1 {
+      margin: 12px 0 10px 0;
+      font-family: "Playfair Display", "Times New Roman", serif;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .lead {
+      margin: 0 0 16px 0;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 13px;
+      border: 1px solid rgba(31, 41, 51, 0.06);
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 8px 28px rgba(31, 41, 51, 0.06);
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1px;
+      padding: 12px 16px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    }
+
+    .btn.primary {
+      background: linear-gradient(120deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #12100f;
+      box-shadow: 0 16px 36px rgba(245, 165, 36, 0.35);
+    }
+
+    .btn.primary:hover { transform: translateY(-1px); }
+
+    .btn.ghost {
+      background: rgba(31, 41, 51, 0.04);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .stat {
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 30px rgba(31, 41, 51, 0.08);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin: 0 0 4px 0;
+    }
+
+    .stat-value {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+      border-radius: calc(var(--radius) + 2px);
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: calc(var(--radius) + 2px);
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .photo-frame {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(31, 41, 51, 0.08);
+      box-shadow: 0 12px 28px rgba(31, 41, 51, 0.15);
+      background: #f8f4ef;
+    }
+
+    .photo-frame img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      aspect-ratio: 4 / 3;
+    }
+
+    .photo-caption {
+      margin: 10px 0 0 0;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(245, 165, 36, 0.16), transparent 70%);
+      top: -30%;
+      right: -20%;
+    }
+
+    .hero-card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-strong);
+      padding: 8px 12px;
+      background: rgba(55, 197, 180, 0.12);
+      border-radius: 999px;
+      border: 1px solid rgba(55, 197, 180, 0.22);
+    }
+
+    .today-list {
+      list-style: none;
+      margin: 10px 0 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .today-item {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(31, 41, 51, 0.03);
+      border: 1px solid rgba(31, 41, 51, 0.05);
+    }
+
+    .time {
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      color: var(--primary-strong);
+    }
+
+    .title {
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      color: var(--ink);
+    }
+
+    .meta {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .section {
+      margin-top: 26px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .week-compact {
+      display: none;
+      border-radius: var(--radius);
+      border: 1px solid rgba(31, 41, 51, 0.08);
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 12px 30px rgba(31, 41, 51, 0.08);
+      padding: 10px;
+    }
+
+    .week-row {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+
+    .week-row + .week-row {
+      margin-top: 6px;
+    }
+
+    .week-row.is-today {
+      background: rgba(245, 165, 36, 0.12);
+      border-color: rgba(245, 165, 36, 0.3);
+    }
+
+    .week-day {
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--ink);
+      letter-spacing: 0.2px;
+    }
+
+    .week-items {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .day-card {
+      background: rgba(255, 255, 255, 0.88);
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 14px 38px rgba(31, 41, 51, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day-card::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(55, 197, 180, 0.12), transparent 70%);
+      top: -40px;
+      right: -40px;
+    }
+
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .day-name {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .day-note {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .badge {
+      font-weight: 700;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 165, 36, 0.2);
+      background: rgba(245, 165, 36, 0.14);
+      color: var(--primary-strong);
+      white-space: nowrap;
+    }
+
+    .class-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .class-item {
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(31, 41, 51, 0.05);
+      border-radius: 12px;
+      background: rgba(31, 41, 51, 0.02);
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--accent-strong);
+      background: rgba(55, 197, 180, 0.1);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(55, 197, 180, 0.25);
+    }
+
+    .note-card {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(31, 41, 51, 0.08);
+      box-shadow: 0 12px 32px rgba(31, 41, 51, 0.08);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .note-block {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(31, 41, 51, 0.03);
+      border: 1px solid rgba(31, 41, 51, 0.06);
+    }
+
+    .note-block h4 {
+      margin: 0 0 6px 0;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .note-block p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .is-today {
+      border: 1px solid rgba(245, 165, 36, 0.35);
+      box-shadow: 0 18px 40px rgba(245, 165, 36, 0.18);
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 16px; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-aside { gap: 12px; }
+      .hero-card header { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .today-item, .class-item { grid-template-columns: 1fr; }
+      .note-card { grid-template-columns: 1fr; }
+      .week-grid { display: none; }
+      .week-compact { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true">
+    <span class="orb sunrise"></span>
+    <span class="orb mint"></span>
+    <span class="orb lilac"></span>
+  </div>
+
+  <main class="page">
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <span class="eyebrow">밝고 고급스러운 스케줄 보드</span>
+          <h1>초3 우리 아이 주간 스케줄</h1>
+          <p class="lead">PC와 모바일 어디서나 깔끔하게 보이는 학원 일정판입니다. 픽업 타임, 준비물, 학원 위치를 한눈에 확인하고 가족과 간편하게 공유하세요.</p>
+
+          <div class="chip-row">
+            <span class="chip">주 6일 운영</span>
+            <span class="chip">픽업 30분 전 연락</span>
+            <span class="chip">프로그램: 놀이 치료 · 인지 · 태권도 · 음악 · 언어</span>
+          </div>
+
+          <div class="cta-row">
+            <button class="btn primary" id="shareButton">스케줄 링크 복사</button>
+            <button class="btn ghost" id="printButton">프린트용 보기</button>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat">
+              <p class="stat-label">다음 수업</p>
+              <p class="stat-value" data-next-class>15:00 놀이 치료</p>
+            </div>
+            <div class="stat">
+              <p class="stat-label">다음 픽업</p>
+              <p class="stat-value" data-pickup>수업 종료 후</p>
+            </div>
+            <div class="stat">
+              <p class="stat-label">준비물 체크</p>
+              <p class="stat-value">태권도복 · 음악 교재 · 필통</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-aside">
+          <div class="photo-card">
+            <div class="photo-frame">
+              <img src="dain.jpg" alt="아이 사진">
+            </div>
+            <p class="photo-caption">우리 아이의 환한 하루를 응원하는 스케줄 보드</p>
+          </div>
+          <div class="hero-card">
+            <header>
+              <div>
+                <p class="muted" style="margin:0;">오늘 루트</p>
+                <h3 style="margin:2px 0 0 0; font-size:20px; letter-spacing:-0.01em;">오늘 수업 요약</h3>
+              </div>
+              <span class="pill" data-today-label>월요일 · 실내 중심</span>
+            </header>
+            <ul class="today-list" data-today-list></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <p class="muted" style="margin:0;">이번 주 학원 일정</p>
+          <h2 class="section-title">요일별 타임라인</h2>
+        </div>
+        <span class="badge" data-week-focus>집중 영역: 놀이 치료 · 인지 · 태권도 · 음악 · 언어</span>
+      </div>
+
+      <div class="week-compact" data-week-compact></div>
+      <div class="week-grid" data-week-grid></div>
+
+      <div class="note-card">
+        <div class="note-block">
+          <h4>픽업 & 이동 동선</h4>
+          <p>월·수는 인지 수업 후 놀이 치료가 이어집니다. 화·목은 태권도 시간 30분 전 도착, 토요일은 오전 수업 후 점심 휴식.</p>
+        </div>
+        <div class="note-block">
+          <h4>준비물 메모</h4>
+          <p>태권도복과 띠, 음악 수업 교재, 인지 수업 필기구 준비. 금요일엔 놀이 치료 전 간단한 간식 챙기기.</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">스케줄을 복사해 가족과 나누고, 주간 메모는 바로 아래에서 수정해 관리하세요.</p>
+  </main>
+
+  <script>
+    const schedule = [
+      {
+        slug: "mon",
+        name: "월요일",
+        vibe: "인지 + 안정",
+        badge: "치료",
+        focus: "인지 · 놀이",
+        tags: ["놀이 치료", "인지"],
+        items: [
+          { time: "14:00", title: "인지 수업", place: "인지 교실", note: "집중력 강화 활동" },
+          { time: "15:00", title: "놀이 치료", place: "치료실", note: "정서 표현 놀이" }
+        ]
+      },
+      {
+        slug: "tue",
+        name: "화요일",
+        vibe: "에너지 업",
+        badge: "태권도",
+        focus: "체력 · 집중",
+        tags: ["태권도"],
+        items: [
+          { time: "15:00", title: "태권도", place: "도장", note: "기본 자세 복습" }
+        ]
+      },
+      {
+        slug: "wed",
+        name: "수요일",
+        vibe: "인지 + 음악",
+        badge: "치료",
+        focus: "인지 · 놀이",
+        tags: ["인지", "음악"],
+        items: [
+          { time: "14:00", title: "인지 수업", place: "인지 교실", note: "문제 해결 활동" },
+          { time: "15:00", title: "음악 수업", place: "음악실", note: "리듬 따라 부르기" }
+        ]
+      },
+      {
+        slug: "thu",
+        name: "목요일",
+        vibe: "몸 풀기",
+        badge: "태권도",
+        focus: "체력 · 집중",
+        tags: ["태권도"],
+        items: [
+          { time: "15:00", title: "태권도", place: "도장", note: "품새 연습" }
+        ]
+      },
+      {
+        slug: "fri",
+        name: "금요일",
+        vibe: "마무리",
+        badge: "치료",
+        focus: "놀이 치료",
+        tags: ["놀이 치료"],
+        items: [
+          { time: "17:00", title: "놀이 치료", place: "치료실", note: "주간 감정 점검" }
+        ]
+      },
+      {
+        slug: "sat",
+        name: "토요일",
+        vibe: "주말 집중",
+        badge: "음악",
+        focus: "음악 · 언어",
+        tags: ["음악", "언어"],
+        items: [
+          { time: "10:30", title: "음악 그룹수업", place: "음악실", note: "합주 & 리듬 놀이" },
+          { time: "13:00", title: "언어 수업", place: "언어실", note: "말하기 표현 연습" }
+        ]
+      }
+    ];
+
+    const dayMap = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const todaySlug = dayMap[new Date().getDay()];
+    const todayData = schedule.find(day => day.slug === todaySlug) || schedule[0];
+
+    function renderWeek() {
+      const grid = document.querySelector("[data-week-grid]");
+      grid.innerHTML = "";
+
+      schedule.forEach(day => {
+        const card = document.createElement("article");
+        card.className = `day-card${day.slug === todayData.slug ? " is-today" : ""}`;
+        card.innerHTML = `
+          <div class="day-head">
+            <div>
+              <p class="day-name">${day.name}</p>
+              <p class="day-note">${day.vibe}</p>
+            </div>
+            <span class="badge">${day.badge}</span>
+          </div>
+          <ul class="class-list">
+            ${day.items.map(item => `
+              <li class="class-item">
+                <div class="time">${item.time}</div>
+                <div>
+                  <p class="title" style="margin:0;">${item.title}</p>
+                  <p class="meta">${item.place} · ${item.note}</p>
+                </div>
+              </li>
+            `).join("")}
+          </ul>
+          <div class="tag">${day.focus}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+      const tagList = [...new Set(schedule.flatMap(d => d.tags || d.badge))];
+      document.querySelector("[data-week-focus]").textContent = `집중 영역: ${tagList.join(" · ")}`;
+    }
+
+    function renderWeekCompact() {
+      const compact = document.querySelector("[data-week-compact]");
+      compact.innerHTML = "";
+
+      schedule.forEach(day => {
+        const row = document.createElement("div");
+        const itemText = day.items
+          .map(item => `${item.time} ${item.title}`)
+          .join(" · ");
+        row.className = `week-row${day.slug === todayData.slug ? " is-today" : ""}`;
+        row.innerHTML = `
+          <div class="week-day">${day.name}</div>
+          <div class="week-items">${itemText}</div>
+        `;
+        compact.appendChild(row);
+      });
+    }
+
+    function renderToday() {
+      const todayList = document.querySelector("[data-today-list]");
+      todayList.innerHTML = todayData.items.map(item => `
+        <li class="today-item">
+          <div class="time">${item.time}</div>
+          <div>
+            <p class="title">${item.title}</p>
+            <p class="meta">${item.place} · ${item.note}</p>
+          </div>
+        </li>
+      `).join("");
+
+      document.querySelector("[data-today-label]").textContent = `${todayData.name} · ${todayData.focus}`;
+
+      const firstClass = todayData.items[0];
+      if (firstClass) {
+        const timeParts = firstClass.time.split(" - ");
+        const startTime = timeParts[0];
+        const endTime = timeParts[1];
+        document.querySelector("[data-next-class]").textContent = `${startTime} ${firstClass.title}`;
+        document.querySelector("[data-pickup]").textContent = endTime ? `${endTime} 픽업` : "수업 종료 후";
+      }
+    }
+
+    function attachActions() {
+      const shareButton = document.getElementById("shareButton");
+      shareButton.addEventListener("click", async () => {
+        const url = window.location.href;
+        try {
+          await navigator.clipboard.writeText(url);
+          shareButton.textContent = "복사 완료!";
+          setTimeout(() => shareButton.textContent = "스케줄 링크 복사", 1500);
+        } catch (err) {
+          shareButton.textContent = "복사 실패, 길게 눌러 복사";
+          setTimeout(() => shareButton.textContent = "스케줄 링크 복사", 2000);
+        }
+      });
+
+      const printButton = document.getElementById("printButton");
+      printButton.addEventListener("click", () => window.print());
+    }
+
+    renderWeek();
+    renderWeekCompact();
+    renderToday();
+    attachActions();
+  </script>
+</body>
+</html>
