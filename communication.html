@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>의사 표현 보드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fbf6ec;
+      --panel: rgba(255, 255, 255, 0.9);
+      --primary: #ffb347;
+      --primary-strong: #f28c18;
+      --accent: #49c6b7;
+      --accent-strong: #1aa190;
+      --ink: #1e2a33;
+      --muted: #5b6771;
+      --line: rgba(30, 42, 51, 0.08);
+      --shadow: 0 18px 40px rgba(30, 42, 51, 0.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 15% 20%, #fff1d7 0, #fff1d7 25%, transparent 40%),
+        radial-gradient(circle at 85% 10%, #d9f6ff 0, #d9f6ff 25%, transparent 45%),
+        linear-gradient(150deg, #fff7e8 0%, #f5fbff 55%, #f4fff9 100%);
+      min-height: 100vh;
+      padding: clamp(16px, 3vw, 28px);
+    }
+
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    header {
+      display: grid;
+      gap: 10px;
+      background: var(--panel);
+      border-radius: calc(var(--radius) + 6px);
+      padding: clamp(18px, 3vw, 26px);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Fraunces", "Times New Roman", serif;
+      font-size: clamp(26px, 4vw, 40px);
+      letter-spacing: -0.02em;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .stage-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      min-height: 360px;
+    }
+
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .stage-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.1px;
+    }
+
+    .stage-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(73, 198, 183, 0.25);
+      color: var(--accent-strong);
+      background: rgba(73, 198, 183, 0.15);
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .card-btn {
+      border: 1px solid rgba(30, 42, 51, 0.08);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 12px;
+      cursor: pointer;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      text-align: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card-btn:hover { transform: translateY(-2px); }
+
+    .card-btn[aria-pressed="true"] {
+      border-color: rgba(242, 140, 24, 0.45);
+      box-shadow: 0 14px 30px rgba(242, 140, 24, 0.25);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 236, 210, 0.7));
+    }
+
+    .icon-wrap {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      background: rgba(73, 198, 183, 0.12);
+      border: 1px solid rgba(73, 198, 183, 0.2);
+      display: grid;
+      place-items: center;
+    }
+
+    .icon-wrap svg {
+      width: 30px;
+      height: 30px;
+      stroke: var(--accent-strong);
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .card-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px 0;
+    }
+
+    .filter-chip {
+      border: 1px solid rgba(30, 42, 51, 0.08);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .filter-chip.is-active {
+      color: var(--ink);
+      border-color: rgba(242, 140, 24, 0.4);
+      background: rgba(255, 236, 210, 0.7);
+    }
+
+    .stage-card.locked .grid {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(0.2);
+    }
+
+    .locked-hint {
+      position: absolute;
+      inset: auto 18px 18px 18px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      background: rgba(30, 42, 51, 0.08);
+      color: var(--muted);
+      display: none;
+    }
+
+    .stage-card.locked .locked-hint { display: block; }
+
+    .sentence-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+    }
+
+    .sentence-text {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .sentence-meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .btn.primary {
+      background: linear-gradient(120deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #1a120a;
+      box-shadow: 0 12px 28px rgba(242, 140, 24, 0.32);
+    }
+
+    .btn.ghost {
+      background: rgba(30, 42, 51, 0.08);
+      color: var(--ink);
+    }
+
+    .toast {
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .stage-card { min-height: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card-btn { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>의사 표현 보드</h1>
+      <p class="lead">원하는 것을 그림을 눌러 말할 수 있도록 만든 2단계 픽토그램 앱입니다. 1단계는 “하고 싶은 말”, 2단계는 “구체적인 대상”을 선택해 문장을 완성합니다.</p>
+    </header>
+
+    <section class="layout">
+      <div class="stage-card" id="stage-1">
+        <div class="stage-head">
+          <h2 class="stage-title">1단계 · 하고 싶은 말</h2>
+          <span class="stage-pill">동사 선택</span>
+        </div>
+        <div class="grid" data-verb-grid></div>
+      </div>
+
+      <div class="stage-card locked" id="stage-2">
+        <div class="stage-head">
+          <h2 class="stage-title">2단계 · 구체적 대상</h2>
+          <span class="stage-pill">명사 선택</span>
+        </div>
+        <div class="filter-row" data-filter-row></div>
+        <div class="grid" data-noun-grid></div>
+        <div class="locked-hint">먼저 1단계에서 하고 싶은 말을 선택해주세요.</div>
+      </div>
+    </section>
+
+    <section class="sentence-card" id="sentence-panel">
+      <p class="sentence-text" data-sentence>원하는 것을 골라 주세요.</p>
+      <p class="sentence-meta">그림을 누르면 자동으로 음성이 재생됩니다. 아래 버튼으로 다시 말할 수 있어요.</p>
+      <div class="action-row">
+        <button class="btn primary" id="speakButton">문장 말하기</button>
+        <button class="btn ghost" id="resetButton">선택 초기화</button>
+      </div>
+      <div class="toast" aria-live="polite" data-toast></div>
+    </section>
+  </main>
+
+  <script>
+    const iconGo = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M8 24h26"></path>
+        <path d="M28 14l12 10-12 10"></path>
+      </svg>
+    `;
+    const iconEat = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14 10v12"></path>
+        <path d="M10 10v12"></path>
+        <path d="M18 10v12"></path>
+        <path d="M28 10c0 10 0 10 0 20"></path>
+        <circle cx="32" cy="14" r="4"></circle>
+      </svg>
+    `;
+    const iconRest = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M30 10a12 12 0 1 0 8 20 14 14 0 1 1-8-20z"></path>
+      </svg>
+    `;
+    const iconPlay = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="22" cy="22" r="9"></circle>
+        <path d="M34 12l2 4 4 1-3 3 .7 4-3.7-2-3.7 2 .7-4-3-3 4-1 2-4z"></path>
+      </svg>
+    `;
+    const iconHelp = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 12c4-6 14-4 14 4 0 8-14 16-14 16S10 24 10 16c0-8 10-10 14-4z"></path>
+      </svg>
+    `;
+
+    const iconPark = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14 10v18"></path>
+        <path d="M34 10v18"></path>
+        <path d="M14 18h20"></path>
+        <rect x="20" y="24" width="8" height="6" rx="2"></rect>
+      </svg>
+    `;
+    const iconHome = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M10 22l14-12 14 12"></path>
+        <path d="M14 22v16h20V22"></path>
+        <path d="M22 38V28h4v10"></path>
+      </svg>
+    `;
+    const iconSchool = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <rect x="10" y="16" width="28" height="20" rx="2"></rect>
+        <path d="M18 16V10h12v6"></path>
+        <path d="M18 24h4"></path>
+        <path d="M26 24h4"></path>
+      </svg>
+    `;
+    const iconBath = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M16 16c0-4 8-6 12-2 2 2 2 6-2 10l-6 8"></path>
+        <circle cx="24" cy="36" r="4"></circle>
+      </svg>
+    `;
+    const iconWater = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <rect x="14" y="14" width="20" height="22" rx="3"></rect>
+        <path d="M14 22h20"></path>
+      </svg>
+    `;
+    const iconRice = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M12 22c2 10 22 10 24 0"></path>
+        <path d="M10 22h28"></path>
+        <path d="M16 16h16"></path>
+      </svg>
+    `;
+    const iconSnack = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="12"></circle>
+        <circle cx="20" cy="20" r="2"></circle>
+        <circle cx="28" cy="22" r="2"></circle>
+        <circle cx="22" cy="28" r="2"></circle>
+      </svg>
+    `;
+    const iconMom = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="18" r="6"></circle>
+        <path d="M12 36c2-8 22-8 24 0"></path>
+        <path d="M14 18c4-6 16-6 20 0"></path>
+      </svg>
+    `;
+    const iconDad = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="18" r="6"></circle>
+        <path d="M12 36c2-8 22-8 24 0"></path>
+        <path d="M18 14h12"></path>
+      </svg>
+    `;
+    const iconTeacher = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <rect x="10" y="14" width="28" height="18" rx="2"></rect>
+        <path d="M16 20h16"></path>
+        <path d="M24 32v6"></path>
+      </svg>
+    `;
+    const iconMusic = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M20 12v18"></path>
+        <path d="M20 12l16-4v18"></path>
+        <circle cx="16" cy="32" r="4"></circle>
+        <circle cx="32" cy="30" r="4"></circle>
+      </svg>
+    `;
+    const iconTaekwondo = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="18" cy="14" r="4"></circle>
+        <path d="M18 18l6 6"></path>
+        <path d="M24 24l12-4"></path>
+        <path d="M24 24l-4 12"></path>
+      </svg>
+    `;
+    const iconDraw = `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M14 34l6-16 14-8 6 6-8 14-16 6z"></path>
+        <path d="M30 12l6 6"></path>
+      </svg>
+    `;
+
+    const verbs = [
+      { id: "go", label: "가고 싶어", icon: iconGo, autoCategory: "장소" },
+      { id: "eat", label: "먹고 싶어", icon: iconEat, autoCategory: "먹을거" },
+      { id: "rest", label: "쉬고 싶어", icon: iconRest, autoCategory: "장소" },
+      { id: "play", label: "놀고 싶어", icon: iconPlay, autoCategory: "활동" },
+      { id: "help", label: "도와줘", icon: iconHelp, autoCategory: "사람" }
+    ];
+
+    const nouns = [
+      { id: "park", label: "놀이터", category: "장소", icon: iconPark },
+      { id: "home", label: "집", category: "장소", icon: iconHome },
+      { id: "school", label: "학교", category: "장소", icon: iconSchool },
+      { id: "bath", label: "화장실", category: "장소", icon: iconBath },
+      { id: "water", label: "물", category: "먹을거", icon: iconWater },
+      { id: "rice", label: "밥", category: "먹을거", icon: iconRice },
+      { id: "snack", label: "과자", category: "먹을거", icon: iconSnack },
+      { id: "mom", label: "엄마", category: "사람", icon: iconMom },
+      { id: "dad", label: "아빠", category: "사람", icon: iconDad },
+      { id: "teacher", label: "선생님", category: "사람", icon: iconTeacher },
+      { id: "music", label: "음악", category: "활동", icon: iconMusic },
+      { id: "taekwondo", label: "태권도", category: "활동", icon: iconTaekwondo },
+      { id: "draw", label: "그림", category: "활동", icon: iconDraw }
+    ];
+
+    const state = {
+      verb: null,
+      noun: null,
+      category: "전체"
+    };
+
+    const verbGrid = document.querySelector("[data-verb-grid]");
+    const nounGrid = document.querySelector("[data-noun-grid]");
+    const filterRow = document.querySelector("[data-filter-row]");
+    const sentenceEl = document.querySelector("[data-sentence]");
+    const toastEl = document.querySelector("[data-toast]");
+    const stage2 = document.getElementById("stage-2");
+
+    function speak(text) {
+      if (!("speechSynthesis" in window)) {
+        toastEl.textContent = "이 브라우저는 음성 발화를 지원하지 않습니다.";
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "ko-KR";
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    }
+
+    function buildSentence() {
+      if (state.verb && state.noun) return `${state.noun} ${state.verb}.`;
+      if (state.verb) return `${state.verb}.`;
+      return "원하는 것을 골라 주세요.";
+    }
+
+    function updateSentence() {
+      sentenceEl.textContent = buildSentence();
+    }
+
+    function renderVerbs() {
+      verbs.forEach(item => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "card-btn";
+        btn.setAttribute("aria-pressed", "false");
+        btn.dataset.verb = item.id;
+        btn.dataset.label = item.label;
+        btn.innerHTML = `
+          <span class="icon-wrap">${item.icon}</span>
+          <span class="card-label">${item.label}</span>
+        `;
+        btn.addEventListener("click", () => {
+          state.verb = item.label;
+          state.category = item.autoCategory || "전체";
+          highlightSelection(verbGrid, "verb", item.id);
+          enableNouns(true);
+          setActiveCategory(state.category);
+          filterNouns();
+          updateSentence();
+          speak(item.label);
+          document.getElementById("stage-2").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+        verbGrid.appendChild(btn);
+      });
+    }
+
+    function renderNouns() {
+      nouns.forEach(item => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "card-btn";
+        btn.setAttribute("aria-pressed", "false");
+        btn.dataset.noun = item.id;
+        btn.dataset.label = item.label;
+        btn.dataset.category = item.category;
+        btn.innerHTML = `
+          <span class="icon-wrap">${item.icon}</span>
+          <span class="card-label">${item.label}</span>
+        `;
+        btn.addEventListener("click", () => {
+          if (!state.verb) {
+            toastEl.textContent = "먼저 1단계에서 하고 싶은 말을 선택해주세요.";
+            return;
+          }
+          state.noun = item.label;
+          highlightSelection(nounGrid, "noun", item.id);
+          updateSentence();
+          speak(buildSentence());
+          document.getElementById("sentence-panel").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+        nounGrid.appendChild(btn);
+      });
+    }
+
+    function renderFilters() {
+      const categories = ["전체", "장소", "먹을거", "사람", "활동"];
+      categories.forEach(category => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "filter-chip";
+        btn.dataset.category = category;
+        btn.textContent = category;
+        btn.addEventListener("click", () => {
+          state.category = category;
+          setActiveCategory(category);
+          filterNouns();
+        });
+        filterRow.appendChild(btn);
+      });
+      setActiveCategory(state.category);
+    }
+
+    function setActiveCategory(category) {
+      [...filterRow.children].forEach(btn => {
+        btn.classList.toggle("is-active", btn.dataset.category === category);
+      });
+    }
+
+    function filterNouns() {
+      [...nounGrid.children].forEach(btn => {
+        const match = state.category === "전체" || btn.dataset.category === state.category;
+        btn.hidden = !match;
+      });
+    }
+
+    function highlightSelection(container, key, id) {
+      [...container.children].forEach(btn => {
+        const selected = btn.dataset[key] === id;
+        btn.setAttribute("aria-pressed", selected ? "true" : "false");
+      });
+    }
+
+    function enableNouns(enabled) {
+      stage2.classList.toggle("locked", !enabled);
+      [...nounGrid.children].forEach(btn => {
+        btn.disabled = !enabled;
+      });
+    }
+
+    document.getElementById("speakButton").addEventListener("click", () => {
+      const sentence = buildSentence();
+      speak(sentence);
+    });
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+      state.verb = null;
+      state.noun = null;
+      state.category = "전체";
+      highlightSelection(verbGrid, "verb", "none");
+      highlightSelection(nounGrid, "noun", "none");
+      setActiveCategory(state.category);
+      filterNouns();
+      enableNouns(false);
+      updateSentence();
+      toastEl.textContent = "선택이 초기화되었습니다.";
+    });
+
+    renderVerbs();
+    renderFilters();
+    renderNouns();
+    enableNouns(false);
+    updateSentence();
+  </script>
+</body>
+</html>
