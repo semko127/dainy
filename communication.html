@@ -111,18 +111,18 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
     }
 
     .card-btn {
       border: 1px solid rgba(30, 42, 51, 0.08);
       border-radius: 16px;
       background: rgba(255, 255, 255, 0.92);
-      padding: 12px;
+      padding: 14px;
       cursor: pointer;
       display: grid;
-      gap: 8px;
+      gap: 10px;
       justify-items: center;
       text-align: center;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -136,28 +136,26 @@
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 236, 210, 0.7));
     }
 
-    .icon-wrap {
-      width: 54px;
-      height: 54px;
-      border-radius: 18px;
-      background: rgba(73, 198, 183, 0.12);
-      border: 1px solid rgba(73, 198, 183, 0.2);
+    .image-wrap {
+      width: 110px;
+      height: 110px;
+      border-radius: 16px;
+      background: #fff;
+      border: 2px solid rgba(30, 42, 51, 0.08);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7), 0 8px 18px rgba(30, 42, 51, 0.1);
       display: grid;
       place-items: center;
+      overflow: hidden;
     }
 
-    .icon-wrap svg {
-      width: 30px;
-      height: 30px;
-      stroke: var(--accent-strong);
-      stroke-width: 2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .card-label {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--ink);
     }
@@ -275,7 +273,7 @@
   <main class="page">
     <header>
       <h1>의사 표현 보드</h1>
-      <p class="lead">원하는 것을 그림을 눌러 말할 수 있도록 만든 2단계 픽토그램 앱입니다. 1단계는 “하고 싶은 말”, 2단계는 “구체적인 대상”을 선택해 문장을 완성합니다.</p>
+      <p class="lead">원하는 것을 그림 카드로 눌러 말할 수 있도록 만든 2단계 보드입니다. 1단계는 “하고 싶은 말”, 2단계는 “구체적인 대상”을 선택해 문장을 완성합니다.</p>
     </header>
 
     <section class="layout">
@@ -310,154 +308,257 @@
   </main>
 
   <script>
-    const iconGo = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M8 24h26"></path>
-        <path d="M28 14l12 10-12 10"></path>
-      </svg>
-    `;
-    const iconEat = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M14 10v12"></path>
-        <path d="M10 10v12"></path>
-        <path d="M18 10v12"></path>
-        <path d="M28 10c0 10 0 10 0 20"></path>
-        <circle cx="32" cy="14" r="4"></circle>
-      </svg>
-    `;
-    const iconRest = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M30 10a12 12 0 1 0 8 20 14 14 0 1 1-8-20z"></path>
-      </svg>
-    `;
-    const iconPlay = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <circle cx="22" cy="22" r="9"></circle>
-        <path d="M34 12l2 4 4 1-3 3 .7 4-3.7-2-3.7 2 .7-4-3-3 4-1 2-4z"></path>
-      </svg>
-    `;
-    const iconHelp = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M24 12c4-6 14-4 14 4 0 8-14 16-14 16S10 24 10 16c0-8 10-10 14-4z"></path>
-      </svg>
-    `;
+    const svgData = (svg) => `data:image/svg+xml;utf8,${encodeURIComponent(svg.trim())}`;
+    const makeImage = (label, svg) => ({ alt: `${label} 그림`, src: svgData(svg) });
 
-    const iconPark = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M14 10v18"></path>
-        <path d="M34 10v18"></path>
-        <path d="M14 18h20"></path>
-        <rect x="20" y="24" width="8" height="6" rx="2"></rect>
-      </svg>
-    `;
-    const iconHome = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M10 22l14-12 14 12"></path>
-        <path d="M14 22v16h20V22"></path>
-        <path d="M22 38V28h4v10"></path>
-      </svg>
-    `;
-    const iconSchool = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <rect x="10" y="16" width="28" height="20" rx="2"></rect>
-        <path d="M18 16V10h12v6"></path>
-        <path d="M18 24h4"></path>
-        <path d="M26 24h4"></path>
-      </svg>
-    `;
-    const iconBath = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M16 16c0-4 8-6 12-2 2 2 2 6-2 10l-6 8"></path>
-        <circle cx="24" cy="36" r="4"></circle>
-      </svg>
-    `;
-    const iconWater = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <rect x="14" y="14" width="20" height="22" rx="3"></rect>
-        <path d="M14 22h20"></path>
-      </svg>
-    `;
-    const iconRice = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M12 22c2 10 22 10 24 0"></path>
-        <path d="M10 22h28"></path>
-        <path d="M16 16h16"></path>
-      </svg>
-    `;
-    const iconSnack = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <circle cx="24" cy="24" r="12"></circle>
-        <circle cx="20" cy="20" r="2"></circle>
-        <circle cx="28" cy="22" r="2"></circle>
-        <circle cx="22" cy="28" r="2"></circle>
-      </svg>
-    `;
-    const iconMom = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <circle cx="24" cy="18" r="6"></circle>
-        <path d="M12 36c2-8 22-8 24 0"></path>
-        <path d="M14 18c4-6 16-6 20 0"></path>
-      </svg>
-    `;
-    const iconDad = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <circle cx="24" cy="18" r="6"></circle>
-        <path d="M12 36c2-8 22-8 24 0"></path>
-        <path d="M18 14h12"></path>
-      </svg>
-    `;
-    const iconTeacher = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <rect x="10" y="14" width="28" height="18" rx="2"></rect>
-        <path d="M16 20h16"></path>
-        <path d="M24 32v6"></path>
-      </svg>
-    `;
-    const iconMusic = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M20 12v18"></path>
-        <path d="M20 12l16-4v18"></path>
-        <circle cx="16" cy="32" r="4"></circle>
-        <circle cx="32" cy="30" r="4"></circle>
-      </svg>
-    `;
-    const iconTaekwondo = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <circle cx="18" cy="14" r="4"></circle>
-        <path d="M18 18l6 6"></path>
-        <path d="M24 24l12-4"></path>
-        <path d="M24 24l-4 12"></path>
-      </svg>
-    `;
-    const iconDraw = `
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M14 34l6-16 14-8 6 6-8 14-16 6z"></path>
-        <path d="M30 12l6 6"></path>
-      </svg>
-    `;
+    const images = {
+      go: makeImage("가고 싶어", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#eaf6ff"/>
+          <circle cx="96" cy="24" r="10" fill="#ffd166"/>
+          <rect y="86" width="120" height="34" fill="#c9f2d1"/>
+          <path d="M10 90c25-22 60-22 90 0" fill="none" stroke="#88c999" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="44" cy="48" r="10" fill="#f4c7a1"/>
+          <path d="M36 46h16" stroke="#3c2f2f" stroke-width="2" stroke-linecap="round"/>
+          <rect x="36" y="58" width="22" height="24" rx="8" fill="#5da9ff"/>
+          <rect x="34" y="82" width="10" height="20" rx="4" fill="#4a7bd4"/>
+          <rect x="48" y="82" width="10" height="20" rx="4" fill="#4a7bd4"/>
+          <rect x="56" y="60" width="8" height="14" rx="4" fill="#f4c7a1"/>
+          <rect x="32" y="60" width="8" height="14" rx="4" fill="#f4c7a1"/>
+          <rect x="58" y="62" width="12" height="16" rx="4" fill="#f38ba0"/>
+        </svg>
+      `),
+      eat: makeImage("먹고 싶어", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#fff3e6"/>
+          <rect y="78" width="120" height="42" fill="#f2c078"/>
+          <rect y="72" width="120" height="10" fill="#f6d3a0"/>
+          <ellipse cx="80" cy="68" rx="18" ry="7" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
+          <ellipse cx="80" cy="64" rx="16" ry="5" fill="#ffffff"/>
+          <rect x="88" y="52" width="4" height="18" rx="2" fill="#c9c9c9"/>
+          <circle cx="90" cy="50" r="5" fill="#c9c9c9"/>
+          <circle cx="40" cy="44" r="10" fill="#f4c7a1"/>
+          <rect x="32" y="54" width="16" height="20" rx="7" fill="#7cc4a6"/>
+          <rect x="36" y="72" width="12" height="10" rx="5" fill="#f4c7a1"/>
+          <rect x="50" y="60" width="10" height="8" rx="4" fill="#f4c7a1"/>
+        </svg>
+      `),
+      rest: makeImage("쉬고 싶어", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#eaf1ff"/>
+          <rect x="12" y="52" width="96" height="40" rx="12" fill="#ffd6a5"/>
+          <rect x="20" y="44" width="40" height="18" rx="9" fill="#ffffff"/>
+          <circle cx="38" cy="54" r="10" fill="#f4c7a1"/>
+          <rect x="30" y="64" width="60" height="20" rx="10" fill="#8ecae6"/>
+          <circle cx="86" cy="32" r="4" fill="#a5b4fc"/>
+          <circle cx="96" cy="24" r="5" fill="#a5b4fc"/>
+          <circle cx="76" cy="24" r="3" fill="#a5b4fc"/>
+        </svg>
+      `),
+      play: makeImage("놀고 싶어", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#f0f7ff"/>
+          <rect y="88" width="120" height="32" fill="#c9f2d1"/>
+          <circle cx="34" cy="50" r="10" fill="#f4c7a1"/>
+          <rect x="26" y="60" width="16" height="22" rx="6" fill="#ff9f1c"/>
+          <rect x="24" y="82" width="10" height="18" rx="4" fill="#ffbf69"/>
+          <rect x="36" y="82" width="10" height="18" rx="4" fill="#ffbf69"/>
+          <circle cx="84" cy="78" r="12" fill="#5da9ff"/>
+          <circle cx="78" cy="74" r="4" fill="#ffffff"/>
+          <rect x="60" y="66" width="16" height="16" rx="4" fill="#9b5de5"/>
+          <rect x="58" y="82" width="16" height="16" rx="4" fill="#f15bb5"/>
+        </svg>
+      `),
+      help: makeImage("도와줘", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#fff7e6"/>
+          <rect y="88" width="120" height="32" fill="#c9f2d1"/>
+          <circle cx="38" cy="46" r="9" fill="#f4c7a1"/>
+          <rect x="32" y="56" width="14" height="22" rx="6" fill="#5da9ff"/>
+          <circle cx="72" cy="44" r="10" fill="#f1b38b"/>
+          <rect x="64" y="56" width="16" height="24" rx="6" fill="#f38ba0"/>
+          <rect x="46" y="62" width="14" height="6" rx="3" fill="#f4c7a1"/>
+          <rect x="58" y="62" width="14" height="6" rx="3" fill="#f1b38b"/>
+          <path d="M92 28c-3-4-9-2-9 2 0 6 9 10 9 10s9-4 9-10c0-4-6-6-9-2z" fill="#ff8fab"/>
+        </svg>
+      `),
+      park: makeImage("놀이터", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#eaf6ff"/>
+          <rect y="86" width="120" height="34" fill="#c9f2d1"/>
+          <rect x="18" y="46" width="12" height="40" rx="6" fill="#8d6e63"/>
+          <circle cx="24" cy="34" r="16" fill="#7bc96f"/>
+          <rect x="56" y="46" width="34" height="10" rx="5" fill="#ffb347"/>
+          <path d="M90 56L74 86" stroke="#ff9f1c" stroke-width="8" stroke-linecap="round"/>
+          <rect x="54" y="56" width="10" height="30" rx="4" fill="#ffa27a"/>
+        </svg>
+      `),
+      home: makeImage("집", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#fff1e6"/>
+          <rect y="80" width="120" height="40" fill="#fde2b4"/>
+          <rect x="28" y="46" width="64" height="44" rx="6" fill="#ffd166"/>
+          <polygon points="24,48 60,18 96,48" fill="#f08b54"/>
+          <rect x="54" y="64" width="12" height="26" rx="3" fill="#8d6e63"/>
+          <rect x="36" y="58" width="12" height="12" rx="2" fill="#ffffff"/>
+          <rect x="72" y="58" width="12" height="12" rx="2" fill="#ffffff"/>
+        </svg>
+      `),
+      school: makeImage("학교", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#eaf2ff"/>
+          <rect y="82" width="120" height="38" fill="#d8e7ff"/>
+          <rect x="22" y="40" width="76" height="46" rx="6" fill="#ffffff" stroke="#bcd4f6" stroke-width="2"/>
+          <rect x="50" y="60" width="20" height="26" rx="4" fill="#ffd166"/>
+          <rect x="32" y="52" width="12" height="12" rx="2" fill="#a0c4ff"/>
+          <rect x="76" y="52" width="12" height="12" rx="2" fill="#a0c4ff"/>
+          <rect x="58" y="28" width="4" height="14" fill="#8d6e63"/>
+          <polygon points="62,28 80,34 62,40" fill="#ff8c61"/>
+        </svg>
+      `),
+      bath: makeImage("화장실", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#e9f7ff"/>
+          <rect y="86" width="120" height="34" fill="#d4eefb"/>
+          <rect x="24" y="40" width="40" height="34" rx="8" fill="#ffffff" stroke="#b7d7f0" stroke-width="2"/>
+          <rect x="32" y="28" width="24" height="14" rx="6" fill="#ffffff" stroke="#b7d7f0" stroke-width="2"/>
+          <rect x="32" y="58" width="24" height="14" rx="7" fill="#e1f4ff"/>
+          <rect x="72" y="44" width="24" height="30" rx="6" fill="#ffffff" stroke="#b7d7f0" stroke-width="2"/>
+          <rect x="76" y="36" width="16" height="8" rx="4" fill="#ffffff" stroke="#b7d7f0" stroke-width="2"/>
+          <circle cx="84" cy="60" r="5" fill="#a3c8e8"/>
+        </svg>
+      `),
+      water: makeImage("물", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#e7f7ff"/>
+          <rect x="30" y="24" width="60" height="72" rx="12" fill="#ffffff" stroke="#b7d7f0" stroke-width="2"/>
+          <rect x="36" y="34" width="48" height="50" rx="10" fill="#bde7ff"/>
+          <circle cx="60" cy="58" r="12" fill="#7ec8ff"/>
+          <path d="M60 40c-8 10-8 18 0 26c8-8 8-16 0-26z" fill="#55b3e6"/>
+        </svg>
+      `),
+      rice: makeImage("밥", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#fff7e8"/>
+          <rect x="24" y="56" width="72" height="28" rx="14" fill="#ffdab9"/>
+          <ellipse cx="60" cy="56" rx="30" ry="10" fill="#ffffff"/>
+          <circle cx="48" cy="54" r="2" fill="#f1f1f1"/>
+          <circle cx="60" cy="52" r="2" fill="#f1f1f1"/>
+          <circle cx="70" cy="55" r="2" fill="#f1f1f1"/>
+          <rect x="82" y="32" width="6" height="28" rx="3" fill="#c9c9c9"/>
+          <circle cx="85" cy="30" r="6" fill="#c9c9c9"/>
+        </svg>
+      `),
+      snack: makeImage("과자", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#fff0f3"/>
+          <rect x="24" y="34" width="36" height="54" rx="8" fill="#ffadad"/>
+          <rect x="28" y="40" width="28" height="34" rx="6" fill="#ffd6e0"/>
+          <rect x="26" y="30" width="32" height="8" rx="4" fill="#ff8fab"/>
+          <circle cx="82" cy="70" r="14" fill="#ffe066"/>
+          <circle cx="76" cy="66" r="3" fill="#c17f59"/>
+          <circle cx="86" cy="72" r="3" fill="#c17f59"/>
+          <circle cx="80" cy="76" r="3" fill="#c17f59"/>
+        </svg>
+      `),
+      mom: makeImage("엄마", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#f9f0ff"/>
+          <rect y="88" width="120" height="32" fill="#e7d7ff"/>
+          <path d="M32 46c2-10 20-10 22 0" fill="#5a3e2b"/>
+          <circle cx="42" cy="46" r="10" fill="#f4c7a1"/>
+          <rect x="34" y="56" width="16" height="24" rx="7" fill="#f38ba0"/>
+          <circle cx="70" cy="52" r="8" fill="#f4c7a1"/>
+          <rect x="64" y="60" width="12" height="18" rx="6" fill="#5da9ff"/>
+          <rect x="50" y="64" width="16" height="6" rx="3" fill="#f4c7a1"/>
+          <path d="M92 30c-3-4-9-2-9 2 0 6 9 10 9 10s9-4 9-10c0-4-6-6-9-2z" fill="#ff8fab"/>
+        </svg>
+      `),
+      dad: makeImage("아빠", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#eef9ff"/>
+          <rect y="88" width="120" height="32" fill="#d7f0ff"/>
+          <circle cx="44" cy="46" r="10" fill="#f1b38b"/>
+          <rect x="36" y="56" width="16" height="24" rx="7" fill="#4a7bd4"/>
+          <rect x="36" y="38" width="16" height="4" rx="2" fill="#3c2f2f"/>
+          <circle cx="72" cy="52" r="8" fill="#f4c7a1"/>
+          <rect x="66" y="60" width="12" height="18" rx="6" fill="#f38ba0"/>
+          <rect x="52" y="64" width="16" height="6" rx="3" fill="#f1b38b"/>
+        </svg>
+      `),
+      teacher: makeImage("선생님", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#f5fbff"/>
+          <rect x="14" y="26" width="92" height="50" rx="8" fill="#cfe8ff"/>
+          <rect x="22" y="34" width="76" height="34" rx="6" fill="#7cc4a6"/>
+          <rect x="22" y="68" width="76" height="6" rx="3" fill="#b0d7c4"/>
+          <circle cx="86" cy="90" r="8" fill="#f4c7a1"/>
+          <rect x="80" y="98" width="12" height="14" rx="6" fill="#f38ba0"/>
+          <rect x="72" y="84" width="12" height="4" rx="2" fill="#f4c7a1"/>
+          <rect x="64" y="80" width="18" height="4" rx="2" fill="#8d6e63"/>
+        </svg>
+      `),
+      music: makeImage("음악", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#eef2ff"/>
+          <rect y="88" width="120" height="32" fill="#e0e7ff"/>
+          <circle cx="44" cy="48" r="10" fill="#f4c7a1"/>
+          <rect x="36" y="58" width="16" height="24" rx="6" fill="#5da9ff"/>
+          <circle cx="78" cy="66" r="18" fill="#ffd166"/>
+          <circle cx="78" cy="66" r="12" fill="#ffe8a3"/>
+          <rect x="64" y="56" width="6" height="16" rx="3" fill="#f4c7a1"/>
+          <rect x="90" y="56" width="6" height="16" rx="3" fill="#f4c7a1"/>
+          <circle cx="98" cy="34" r="4" fill="#a5b4fc"/>
+          <circle cx="104" cy="28" r="3" fill="#a5b4fc"/>
+        </svg>
+      `),
+      taekwondo: makeImage("태권도", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#eef7ff"/>
+          <rect y="88" width="120" height="32" fill="#d9f2ff"/>
+          <circle cx="52" cy="44" r="10" fill="#f4c7a1"/>
+          <rect x="44" y="54" width="16" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="42" y="68" width="20" height="6" fill="#333333"/>
+          <rect x="38" y="78" width="10" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="58" y="70" width="24" height="8" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="90" cy="76" r="8" fill="#ffb347"/>
+          <rect x="84" y="82" width="12" height="10" rx="4" fill="#ff8c61"/>
+        </svg>
+      `),
+      draw: makeImage("그림", `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="18" fill="#fff8f0"/>
+          <rect x="18" y="34" width="84" height="56" rx="8" fill="#ffffff" stroke="#e6d3c0" stroke-width="2"/>
+          <circle cx="40" cy="54" r="8" fill="#ffadad"/>
+          <rect x="58" y="48" width="28" height="8" rx="4" fill="#9b5de5"/>
+          <rect x="26" y="80" width="68" height="10" rx="5" fill="#f2c078"/>
+          <rect x="70" y="62" width="22" height="6" rx="3" fill="#ffb347"/>
+        </svg>
+      `)
+    };
 
     const verbs = [
-      { id: "go", label: "가고 싶어", icon: iconGo, autoCategory: "장소" },
-      { id: "eat", label: "먹고 싶어", icon: iconEat, autoCategory: "먹을거" },
-      { id: "rest", label: "쉬고 싶어", icon: iconRest, autoCategory: "장소" },
-      { id: "play", label: "놀고 싶어", icon: iconPlay, autoCategory: "활동" },
-      { id: "help", label: "도와줘", icon: iconHelp, autoCategory: "사람" }
+      { id: "go", label: "가고 싶어", image: images.go, autoCategory: "장소" },
+      { id: "eat", label: "먹고 싶어", image: images.eat, autoCategory: "먹을거" },
+      { id: "rest", label: "쉬고 싶어", image: images.rest, autoCategory: "장소" },
+      { id: "play", label: "놀고 싶어", image: images.play, autoCategory: "활동" },
+      { id: "help", label: "도와줘", image: images.help, autoCategory: "사람" }
     ];
 
     const nouns = [
-      { id: "park", label: "놀이터", category: "장소", icon: iconPark },
-      { id: "home", label: "집", category: "장소", icon: iconHome },
-      { id: "school", label: "학교", category: "장소", icon: iconSchool },
-      { id: "bath", label: "화장실", category: "장소", icon: iconBath },
-      { id: "water", label: "물", category: "먹을거", icon: iconWater },
-      { id: "rice", label: "밥", category: "먹을거", icon: iconRice },
-      { id: "snack", label: "과자", category: "먹을거", icon: iconSnack },
-      { id: "mom", label: "엄마", category: "사람", icon: iconMom },
-      { id: "dad", label: "아빠", category: "사람", icon: iconDad },
-      { id: "teacher", label: "선생님", category: "사람", icon: iconTeacher },
-      { id: "music", label: "음악", category: "활동", icon: iconMusic },
-      { id: "taekwondo", label: "태권도", category: "활동", icon: iconTaekwondo },
-      { id: "draw", label: "그림", category: "활동", icon: iconDraw }
+      { id: "park", label: "놀이터", category: "장소", image: images.park },
+      { id: "home", label: "집", category: "장소", image: images.home },
+      { id: "school", label: "학교", category: "장소", image: images.school },
+      { id: "bath", label: "화장실", category: "장소", image: images.bath },
+      { id: "water", label: "물", category: "먹을거", image: images.water },
+      { id: "rice", label: "밥", category: "먹을거", image: images.rice },
+      { id: "snack", label: "과자", category: "먹을거", image: images.snack },
+      { id: "mom", label: "엄마", category: "사람", image: images.mom },
+      { id: "dad", label: "아빠", category: "사람", image: images.dad },
+      { id: "teacher", label: "선생님", category: "사람", image: images.teacher },
+      { id: "music", label: "음악", category: "활동", image: images.music },
+      { id: "taekwondo", label: "태권도", category: "활동", image: images.taekwondo },
+      { id: "draw", label: "그림", category: "활동", image: images.draw }
     ];
 
     const state = {
@@ -503,7 +604,7 @@
         btn.dataset.verb = item.id;
         btn.dataset.label = item.label;
         btn.innerHTML = `
-          <span class="icon-wrap">${item.icon}</span>
+          <span class="image-wrap"><img src="${item.image.src}" alt="${item.image.alt}"></span>
           <span class="card-label">${item.label}</span>
         `;
         btn.addEventListener("click", () => {
@@ -531,7 +632,7 @@
         btn.dataset.label = item.label;
         btn.dataset.category = item.category;
         btn.innerHTML = `
-          <span class="icon-wrap">${item.icon}</span>
+          <span class="image-wrap"><img src="${item.image.src}" alt="${item.image.alt}"></span>
           <span class="card-label">${item.label}</span>
         `;
         btn.addEventListener("click", () => {
