@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>패브릭 청소기 비교 분석 | 비셀 vs Donlim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #1E2761 0%, #2C3E50 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #FFFFFF;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #CADCFC;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .product-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+        }
+
+        .bissell::before {
+            background: linear-gradient(180deg, #028090 0%, #00A896 100%);
+        }
+
+        .donlim::before {
+            background: linear-gradient(180deg, #F96167 0%, #F9E795 100%);
+        }
+
+        .product-header {
+            margin-bottom: 20px;
+            padding-left: 15px;
+        }
+
+        .product-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1E2761;
+            margin-bottom: 5px;
+        }
+
+        .product-model {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 15px 0;
+            padding-left: 15px;
+        }
+
+        .bissell .price { color: #028090; }
+        .donlim .price { color: #F96167; }
+
+        .section {
+            margin-bottom: 20px;
+            padding-left: 15px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1E2761;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title.pros { color: #2C5F2D; }
+        .section-title.cons { color: #990011; }
+
+        .spec-list, .feature-list {
+            list-style: none;
+        }
+
+        .spec-list li, .feature-list li {
+            font-size: 0.9rem;
+            color: #444;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .spec-list li:last-child, .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .spec-value {
+            font-weight: 600;
+            color: #1E2761;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stars {
+            color: #FFD700;
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .summary-title {
+            color: #FFFFFF;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #FFFFFF;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table th {
+            background: #1E2761;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: #444;
+            background: #f8f9fa;
+        }
+
+        .winner {
+            background: #e8f5e9 !important;
+            color: #2C5F2D;
+            font-weight: 600;
+        }
+
+        .verdict {
+            background: linear-gradient(135deg, #028090 0%, #00A896 100%);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .verdict h3 {
+            color: #FFFFFF;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .verdict p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #CADCFC;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+
+        footer a {
+            color: #00A896;
+            text-decoration: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge-teal {
+            background: #E0F7FA;
+            color: #028090;
+        }
+
+        .badge-coral {
+            background: #FFE0E0;
+            color: #F96167;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>패브릭 청소기 비교 분석</h1>
+            <p class="subtitle">비셀 하이드로스팀 vs Donlim 다용도 패브릭 청소기</p>
+        </header>
+
+        <div class="comparison-grid">
+            <!-- Bissell Card -->
+            <div class="product-card bissell">
+                <div class="product-header">
+                    <h2 class="product-name">비셀 하이드로스팀 <span class="badge badge-teal">글로벌 브랜드</span></h2>
+                    <p class="product-model">SpotClean HydroSteam 3791S</p>
+                </div>
+
+                <p class="price">₩499,000</p>
+
+                <div class="section">
+                    <h3 class="section-title">📊 주요 스펙</h3>
+                    <ul class="spec-list">
+                        <li>흡입력: <span class="spec-value">13,000Pa</span></li>
+                        <li>스팀온도: <span class="spec-value">100°C</span></li>
+                        <li>물탱크: <span class="spec-value">1.3L</span> / 오수탱크: <span class="spec-value">1.1L</span></li>
+                        <li>무게: <span class="spec-value">6.8kg</span></li>
+                        <li>코드 길이: <span class="spec-value">4M</span> / 호스: <span class="spec-value">1.5M</span></li>
+                        <li class="rating">평점: <span class="stars">★★★★☆</span> <span class="spec-value">4.5/5.0</span> (39건+)</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title pros">✅ 장점</h3>
+                    <ul class="feature-list">
+                        <li>4가지 청소모드 (일반/고온/스팀/스팀분사)</li>
+                        <li>99.99% 살균력 - 진드기, 빈대 제거에 효과적</li>
+                        <li>음성 안내 스마트 시스템 탑재</li>
+                        <li>LED 제어판으로 직관적 조작</li>
+                        <li>글로벌 브랜드의 검증된 품질과 A/S</li>
+                        <li>국내 다수의 실사용 리뷰 존재</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title cons">❌ 단점</h3>
+                    <ul class="feature-list">
+                        <li>높은 가격대 (약 50만원)</li>
+                        <li>유선 사용으로 이동성 제한</li>
+                        <li>6.8kg 무게감 - 이동 시 부담</li>
+                        <li>물/세제 소비량이 많은 편</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Donlim Card -->
+            <div class="product-card donlim">
+                <div class="product-header">
+                    <h2 class="product-name">Donlim 다용도 패브릭 <span class="badge badge-coral">신규 진입</span></h2>
+                    <p class="product-model">스팟클린 스팀청소기 (플래그십)</p>
+                </div>
+
+                <p class="price">가격 미정 (2025년 신규 출시)</p>
+
+                <div class="section">
+                    <h3 class="section-title">📊 주요 스펙</h3>
+                    <ul class="spec-list">
+                        <li>흡입력: <span class="spec-value highlight">15,000Pa</span> (더 강력)</li>
+                        <li>스팀온도: <span class="spec-value highlight">170°C</span> (초고온)</li>
+                        <li>물탱크: <span class="spec-value">1.3L</span> / 오수탱크: <span class="spec-value">1.4L</span></li>
+                        <li>스팀 분사: <span class="spec-value">245g/분</span>, <span class="spec-value">2.5bar</span></li>
+                        <li>스팀 분사거리: <span class="spec-value">1.25M</span></li>
+                        <li class="rating">평점: <span style="color: #888;">리뷰 부족 (신규 출시)</span></li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title pros">✅ 장점</h3>
+                    <ul class="feature-list">
+                        <li>초고온 스팀 170°C - 업계 최고 수준</li>
+                        <li>더 강력한 흡입력 15,000Pa</li>
+                        <li>자가세척 시스템 내장 - 위생 관리 편리</li>
+                        <li>레드닷 디자인 어워드 수상 (디자인 우수)</li>
+                        <li>4종 브러시 + LED 터치스크린</li>
+                        <li>원터치 코드 감기 기능</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title cons">❌ 단점</h3>
+                    <ul class="feature-list">
+                        <li>한국 시장 신규 진입 - 사용후기 매우 부족</li>
+                        <li>A/S 네트워크 및 서비스 미확인</li>
+                        <li>중국 브랜드 - 국내 인지도 낮음</li>
+                        <li>장기 내구성 검증 어려움</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="summary-section">
+            <h3 class="summary-title">📋 핵심 스펙 비교표</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>항목</th>
+                        <th>비셀 하이드로스팀</th>
+                        <th>Donlim 플래그십</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>흡입력</td>
+                        <td>13,000Pa</td>
+                        <td class="winner">15,000Pa ✓</td>
+                    </tr>
+                    <tr>
+                        <td>스팀 온도</td>
+                        <td>100°C</td>
+                        <td class="winner">170°C ✓</td>
+                    </tr>
+                    <tr>
+                        <td>오수탱크 용량</td>
+                        <td>1.1L</td>
+                        <td class="winner">1.4L ✓</td>
+                    </tr>
+                    <tr>
+                        <td>자가세척 시스템</td>
+                        <td>-</td>
+                        <td class="winner">있음 ✓</td>
+                    </tr>
+                    <tr>
+                        <td>브랜드 신뢰도</td>
+                        <td class="winner">높음 ✓</td>
+                        <td>검증 필요</td>
+                    </tr>
+                    <tr>
+                        <td>사용자 리뷰</td>
+                        <td class="winner">풍부함 ✓</td>
+                        <td>매우 부족</td>
+                    </tr>
+                    <tr>
+                        <td>A/S 네트워크</td>
+                        <td class="winner">국내 확보 ✓</td>
+                        <td>미확인</td>
+                    </tr>
+                    <tr>
+                        <td>가격</td>
+                        <td>₩499,000</td>
+                        <td>미정</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Verdict -->
+        <div class="verdict">
+            <h3>💡 구매 가이드</h3>
+            <p>
+                <strong>비셀 하이드로스팀</strong>은 검증된 품질과 풍부한 사용후기, 안정적인 A/S가 강점입니다.
+                안정성과 신뢰도를 중시하는 분께 추천합니다.<br><br>
+                <strong>Donlim</strong>은 스펙상 더 강력한 성능(170°C 초고온, 15,000Pa 흡입력)을 제공하지만,
+                한국 시장 신규 진입으로 실사용 리뷰와 A/S 체계가 부족합니다.
+                가격이 합리적으로 책정되고 리뷰가 축적된 후 검토하시는 것을 권장합니다.
+            </p>
+        </div>
+
+        <footer>
+            <p>출처:
+                <a href="https://www.bissell.co.kr" target="_blank">비셀코리아</a>,
+                <a href="https://www.etnews.com" target="_blank">전자신문</a>,
+                <a href="https://www.asiatoday.co.kr" target="_blank">아시아투데이</a>,
+                <a href="https://vacuumwars.com" target="_blank">Vacuum Wars</a>,
+                <a href="https://www.red-dot.org" target="_blank">Red Dot Design</a>
+            </p>
+            <p style="margin-top: 10px;">2025년 1월 기준 검색 결과</p>
+        </footer>
+    </div>
+</body>
+</html>
